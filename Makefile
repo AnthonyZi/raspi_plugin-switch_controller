@@ -5,7 +5,7 @@ CXX = g++
 ##################
 CFLAGS = -Wall -g -O3
 CXXFLAGS = $(CFLAGS)
-LDFLAGS = -lwiringpi
+LDFLAGS = -lwiringPi
 
 NAME = remoteswitch_controller
 
@@ -25,18 +25,13 @@ OBJS += $(patsubst $.c, %.o, $(filter %.c, $(CSOURCE)))
 
 default : $(NAME)
 	$(MAKE) $(NAME)
-	./$(NAME)
 
 r :
 	reset
 	$(MAKE) $(NAME)
-	./$(NAME)
 
 compile : 
 	$(MAKE) $(NAME)
-
-run :
-	./$(NAME)
 
 #all :
 #	$(MAKE) $(NAME)	
