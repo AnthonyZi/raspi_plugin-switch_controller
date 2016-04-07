@@ -7,7 +7,7 @@ CFLAGS = -Wall -g -O3
 CXXFLAGS = $(CFLAGS)
 LDFLAGS = -lwiringpi
 
-NAME = elrocontrol
+NAME = remoteswitch_controller
 
 CSOURCE =
 CPPSOURCE = main.cpp elrosender.cpp
