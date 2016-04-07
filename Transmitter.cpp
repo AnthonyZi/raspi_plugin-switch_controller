@@ -1,15 +1,15 @@
 #include "elro.h"
 
-ElroSender::ElroSender(int pinp)
+Transmitter::Transmitter(int pinp)
 {
 	init(pinp, 0b10110)
 }
 
-ElroSender::~ElroSender(int pinp)
+Transmitter::~Transmitter(int pinp)
 {
 }
 
-void ElroSender::init(int pinp, uint8_t codep)
+void Transmitter::init(int pinp, uint8_t codep)
 {
         wiringPiSetup();
         pinMode(datapin, OUTPUT);
@@ -36,7 +36,7 @@ void ElroSender::init(int pinp, uint8_t codep)
         suffixoff[5]=0;
 }
 
-void ElroSender::sendbit(int valp)
+void Transmitter::sendbit(int valp)
 {
         switch(valp)
         {
@@ -59,7 +59,7 @@ void ElroSender::sendbit(int valp)
         }
 }
 
-void ElroSender::sendsignal(uint8_t devicecodep, bool statep)
+void Transmitter::sendsignal(uint8_t devicecodep, bool statep)
 {
         for(int i = 0; i<11; i++)
         {

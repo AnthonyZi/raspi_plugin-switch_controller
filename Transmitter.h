@@ -10,7 +10,7 @@
 #define ON 1
 #define OFF 0
 
-class ElroSender
+class Transmitter
 {
 private:
         bool praeamble[11];
@@ -22,7 +22,7 @@ private:
         void sendbit(int bitp, int valp);
 
 public:
-	ElroSender(int pinp);
-	virtual ~ElroSender();
+	Transmitter(int pinp);
+	virtual ~Transmitter();
         void sendsignal(uint8_t devicecodep, bool statep);
 };

@@ -10,7 +10,7 @@ LDFLAGS = -lwiringpi
 NAME = remoteswitch_controller
 
 CSOURCE =
-CPPSOURCE = main.cpp elrosender.cpp
+CPPSOURCE = Main.cpp Transmitter.cpp
 
 #################
 
