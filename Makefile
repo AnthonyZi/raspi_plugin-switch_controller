@@ -7,7 +7,7 @@ CFLAGS = -Wall -g -O3
 CXXFLAGS = $(CFLAGS)
 LDFLAGS = -lwiringPi
 
-NAME = remoteswitch_controller
+NAME = remote_switch
 
 CSOURCE =
 CPPSOURCE = Main.cpp Transmitter.cpp
