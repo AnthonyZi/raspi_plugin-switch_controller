@@ -31,16 +31,16 @@ void remote_switch(uint8_t switch_no, uint8_t state)
         uint32_t signal = 0;
         switch(switch_no)
         {
-                case 0:
+                case 1:
                         signal |= PREAMBLE | A;
                         break;
-                case 1:
+                case 2:
                         signal |= PREAMBLE | B;
                         break;
-                case 2:
+                case 3:
                         signal |= PREAMBLE | C;
                         break;
-                case 3:
+                case 4:
                         signal |= PREAMBLE | D;
                         break;
                 default:
@@ -59,10 +59,14 @@ void remote_switch(uint8_t switch_no, uint8_t state)
 int main(void)
 {
         transmitter_init();
-        while(1) { }			//Loop forever, interrupts do the rest
+        while(1)
+        {
+               timer1delaymilli(10000);
+               remote_switch(1, 0);
+        }			//Loop forever, interrupts do the rest
 }
 
 ISR(INT1_vect)
 {
-        remote_switch(0, 1);
+        remote_switch(1, 1);
 }

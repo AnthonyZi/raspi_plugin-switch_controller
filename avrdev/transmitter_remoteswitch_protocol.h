@@ -19,7 +19,7 @@ void transmitter_activate(void);	//HI for 1 ms to wake transmitter up
 
 void transmitter_sendsignal(uint32_t signalp, uint8_t signallengthp);
 
-void timer1delaymilli(uint16_t millisecondsp);
-void timer1delaymicro(uint16_t microsecondsp);
+void timer1delaymilli(uint16_t millisecondsp); //maximum 16777 ms
+void timer1delaymicro(uint16_t microsecondsp); //maximum 65563 µs
 
 #endif
