@@ -13,12 +13,9 @@
 #define TRANSMITTER_PORT        PORTD
 #define TRANSMITTER_PIN_NUMBER  0
 
-uint8_t datapin = 0;
-bool timeinterrupt = 0;
-
-void transmitter_init();
-void transmitter_sendbit(bool valp);
-void transmitter_activate()      //HI for 1 ms to wake transmitter up
+void transmitter_init(void);
+void transmitter_sendbit(uint8_t valp);
+void transmitter_activate(void);	//HI for 1 ms to wake transmitter up
 
 void transmitter_sendsignal(uint32_t signalp, uint8_t signallengthp);
 

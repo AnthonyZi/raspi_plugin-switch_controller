@@ -26,13 +26,34 @@
 #define END		0b0000000000010101010111110
 
 
-void remote_switch(uint8_t switch_no, bool state)
+void remote_switch(uint8_t switch_no, uint8_t state)
 {
+        uint32_t signal = 0;
         switch(switch_no)
         {
                 case 0:
+                        signal |= PREAMBLE | A;
+                        break;
+                case 1:
+                        signal |= PREAMBLE | B;
+                        break;
+                case 2:
+                        signal |= PREAMBLE | C;
+                        break;
+                case 3:
+                        signal |= PREAMBLE | D;
+                        break;
+                default:
+                        break;
 
         }
+        (state==1) ? (signal |= ON) : (signal |= OFF);
+
+        transmitter_activate();
+        transmitter_sendsignal(signal, SIGLENGTH);
+        transmitter_sendsignal(signal, SIGLENGTH);
+        transmitter_sendsignal(signal, SIGLENGTH);
+        transmitter_sendsignal(PREAMBLE | END, SIGLENGTH);
 }
 
 int main(void)
@@ -43,5 +64,5 @@ int main(void)
 
 ISR(INT1_vect)
 {
-        transmitter_sendsignal();
+        remote_switch(0, 1);
 }

@@ -1,4 +1,8 @@
-#include "Transmitter.h"
+#include "transmitter_remoteswitch_protocol.h"
+
+//global variables to avoid multiple definitions while linking
+uint8_t datapin = 0;
+uint8_t timerinterrupt = 0;
 
 void transmitter_init()
 {
@@ -13,9 +17,8 @@ void transmitter_init()
         TRANSMITTER_PORT |= (1<<TRANSMITTER_PIN_NUMBER);        //Set PortD Pin0 high to turn on LED
 }
 
-void transmitter_sendbit(bool valp)
+void transmitter_sendbit(uint8_t valp)
 {
-	std::cout << valp;
         switch(valp)
         {
                 case 0:
@@ -48,15 +51,15 @@ void transmitter_sendsignal(uint32_t signalp, uint8_t signallengthp)
         timer1delaymilli(10);
         for(int i = 0; i<signallengthp; i++)
         {
-		sendbit( (signalp&signalcomperator) > 0 );
+		transmitter_sendbit( (signalp&signalcomperator) > 0 );
 		signalp = signalp<<1;
         }
 }
 
 void timer1delaymicro(uint16_t microsecondsp) //maximum 65536 ms
 {
-        OCR1A = microsendsp;            //set TOP of TIMER1A
-        timerinterrupt=0;               //clear timerinterrupt variable
+        OCR1A = microsecondsp;            //set TOP of TIMER1A
+        timerinterrupt = 0;               //clear timerinterrupt variable
         TCCR1B |= 1<<CS10;	        //start timer with no prescaler
         while(!timerinterrupt) { }
 }
@@ -64,7 +67,7 @@ void timer1delaymicro(uint16_t microsecondsp) //maximum 65536 ms
 void timer1delaymilli(uint16_t millisecondsp) //maximum 16777 ms
 {
         OCR1A = (uint16_t)(((uint32_t)millisecondsp*1000)/256); //set TOP of TIMER1A
-        timerinterrupt=0;                                       //clear timerinterrupt variable
+        timerinterrupt = 0;                                       //clear timerinterrupt variable
         TCCR1B |= 1<<CS12;                                      //start timer with prescaler 256
         while(!timerinterrupt) { }
 }
