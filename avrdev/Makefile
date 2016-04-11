@@ -1,4 +1,3 @@
-
 ###################################################################
 ##Target Device
 MCU=atmega8
@@ -49,7 +48,7 @@ EXTRAINCDIRS =
 
 ###################################################################
 ##Compiler Flags
-CFLAGS= -g -0${OPTIMIZATION} \
+CFLAGS= -g -O${OPTIMIZATION} \
 	-funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums \
 	-Wall -Wstrict-prototypes \
 	-Wa,-adhlns=$(<:.c=.lst) \

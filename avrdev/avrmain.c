@@ -9,7 +9,7 @@ int main(void)
   TCCR1B |= 1<<CS11 | 1<<CS10;	//Divide by 64
   OCR1A = 15624;		//Count 15624 cycles for 1 second interrupt
   TCCR1B |= 1<<WGM12;		//Put Timer/Counter1 in CTC mode
-  TIMSK1 |= 1<<OCIE1A;		//enable timer compare interrupt
+  TIMSK |= 1<<OCIE1A;		//enable timer compare interrupt
   sei();			//Enable global interrupts
 
   //Setup the I/O for the LED

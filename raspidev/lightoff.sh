@@ -12,6 +12,6 @@ sudo -v
 sleep $TIME
 for((i=0; i<5; i++))
 do
-	sudo $HOME/git/raspi_plugin-switch_controller/remote_switch A OFF
+	sudo $HOME/git/raspi_plugin-switch_controller/raspidev/remote_switch A OFF
 	sleep 2
 done
