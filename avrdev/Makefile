@@ -4,7 +4,7 @@ MCU=atmega8
 
 ###################################################################
 ##Target-Name
-TARGET=avrmain
+TARGET=avr_remote_switch
 
 ###################################################################
 ##Which Programmer do you use?
@@ -23,7 +23,7 @@ FORMAT=ihex
 ###################################################################
 ##List of all source files
 SOURCE=$(TARGET).c
-#SOURCE+=foo.c
+SOURCE+=transmitter_remoteswitch_protocl.c
 
 
 ######################
