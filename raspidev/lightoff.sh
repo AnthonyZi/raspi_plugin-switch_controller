@@ -1,3 +1,4 @@
+#!/bin/bash
 TIME=10
 if [ "$#" -gt 0 ]
 then

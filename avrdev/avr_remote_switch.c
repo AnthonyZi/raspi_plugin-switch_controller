@@ -29,6 +29,11 @@
 void remote_switch(uint8_t switch_no, uint8_t state)
 {
         uint32_t signal = 0;
+        PORTD |= 1<<0;
+        timer1delaymilli(1000);
+        PORTD ^= 1<<0;
+        timer1delaymilli(1000);
+
         switch(switch_no)
         {
                 case 1:
@@ -59,11 +64,12 @@ void remote_switch(uint8_t switch_no, uint8_t state)
 int main(void)
 {
         transmitter_init();
-        while(1)
+
+        while(1) //Loop forever, interrupts do the rest
         {
-               timer1delaymilli(10000);
                remote_switch(1, 0);
-        }			//Loop forever, interrupts do the rest
+               timer1delaymilli(10000);
+        }
 }
 
 ISR(INT1_vect)

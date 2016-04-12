@@ -1,0 +1,167 @@
+   1               		.file	"test.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__tmp_reg__ = 0
+   6               	__zero_reg__ = 1
+   9               		.text
+  10               	.Ltext0:
+ 103               	.global	init
+ 105               	init:
+ 106               		.stabd	46,0,0
+   1:test.c        **** #define F_CPU 1000000
+   2:test.c        **** 
+   3:test.c        **** #include <avr/io.h>
+   4:test.c        **** #include <avr/interrupt.h>
+   5:test.c        **** 
+   6:test.c        **** void init(void)
+   7:test.c        **** {
+ 108               	.LM0:
+ 109               	.LFBB1:
+ 110               	/* prologue: function */
+ 111               	/* frame size = 0 */
+ 112               	/* stack size = 0 */
+ 113               	.L__stack_usage = 0
+   8:test.c        ****         //pin init
+   9:test.c        ****         DDRD |= 1<<0;
+ 115               	.LM1:
+ 116 0000 889A      		sbi 0x11,0
+  10:test.c        **** 
+  11:test.c        **** //        sei();
+  12:test.c        ****         SREG |= (1<<7); //set I-bit (Interrupt enable) in SREG
+ 118               	.LM2:
+ 119 0002 8FB7      		in r24,__SREG__
+ 120 0004 8068      		ori r24,lo8(-128)
+ 121 0006 8FBF      		out __SREG__,r24
+  13:test.c        ****         //counter init
+  14:test.c        ****         TCCR1B &= ~(1<<CS10) & ~(1<<CS11) & ~(1<<CS12); //force stop counter
+ 123               	.LM3:
+ 124 0008 8EB5      		in r24,0x2e
+ 125 000a 887F      		andi r24,lo8(-8)
+ 126 000c 8EBD      		out 0x2e,r24
+  15:test.c        ****         TIMSK &= ~(1<<TICIE1) & ~(1<<OCIE1A) & ~(1<<OCIE1B) & ~(1<<TOIE1); //disable interrupts (cl
+ 128               	.LM4:
+ 129 000e 89B7      		in r24,0x39
+ 130 0010 837C      		andi r24,lo8(-61)
+ 131 0012 89BF      		out 0x39,r24
+  16:test.c        ****         TIFR |= ~(1<<ICF1) | ~(1<<OCF1A) | ~(1<<OCF1B) | ~(1<<TOV1); // clear interrupts if there w
+ 133               	.LM5:
+ 134 0014 88B7      		in r24,0x38
+ 135 0016 8FEF      		ldi r24,lo8(-1)
+ 136 0018 88BF      		out 0x38,r24
+  17:test.c        **** //        cli();
+  18:test.c        ****         
+  19:test.c        ****         //set CTC-mode
+  20:test.c        ****         TCCR1B |= (1<<WGM12);
+ 138               	.LM6:
+ 139 001a 8EB5      		in r24,0x2e
+ 140 001c 8860      		ori r24,lo8(8)
+ 141 001e 8EBD      		out 0x2e,r24
+  21:test.c        ****         //set top value for the counter in CTC-mode
+  22:test.c        ****         OCR1A = (uint16_t)15624;
+ 143               	.LM7:
+ 144 0020 88E0      		ldi r24,lo8(8)
+ 145 0022 9DE3      		ldi r25,lo8(61)
+ 146 0024 9BBD      		out 0x2a+1,r25
+ 147 0026 8ABD      		out 0x2a,r24
+  23:test.c        ****         //enable interrupt for tcnt1==ocr1a
+  24:test.c        ****         TIMSK |= (1<<OCIE1A);
+ 149               	.LM8:
+ 150 0028 89B7      		in r24,0x39
+ 151 002a 8061      		ori r24,lo8(16)
+ 152 002c 89BF      		out 0x39,r24
+  25:test.c        **** 
+  26:test.c        ****         //set prescaler to 64 (CSxx) and start counter
+  27:test.c        ****         TCCR1B |= (1<<CS11) | (1<<CS10);
+ 154               	.LM9:
+ 155 002e 8EB5      		in r24,0x2e
+ 156 0030 8360      		ori r24,lo8(3)
+ 157 0032 8EBD      		out 0x2e,r24
+ 158 0034 0895      		ret
+ 160               	.Lscope1:
+ 162               		.stabd	78,0,0
+ 163               		.section	.text.startup,"ax",@progbits
+ 165               	.global	main
+ 167               	main:
+ 168               		.stabd	46,0,0
+  28:test.c        **** //        sei();
+  29:test.c        **** }
+  30:test.c        **** 
+  31:test.c        **** int main(void)
+  32:test.c        **** {
+ 170               	.LM10:
+ 171               	.LFBB2:
+ 172               	/* prologue: function */
+ 173               	/* frame size = 0 */
+ 174               	/* stack size = 0 */
+ 175               	.L__stack_usage = 0
+  33:test.c        ****         init();
+ 177               	.LM11:
+ 178 0000 00D0      		rcall init
+  34:test.c        ****         PORTD ^= (1<<0);
+ 180               	.LM12:
+ 181 0002 82B3      		in r24,0x12
+ 182 0004 91E0      		ldi r25,lo8(1)
+ 183 0006 8927      		eor r24,r25
+ 184 0008 82BB      		out 0x12,r24
+ 185               	.L3:
+ 186 000a 00C0      		rjmp .L3
+ 188               	.Lscope2:
+ 190               		.stabd	78,0,0
+ 191               		.text
+ 193               	.global	__vector_6
+ 195               	__vector_6:
+ 196               		.stabd	46,0,0
+  35:test.c        **** 
+  36:test.c        ****         while(1)
+  37:test.c        ****         {
+  38:test.c        ****         }			//Loop forever, interrupts do the rest
+  39:test.c        **** }
+  40:test.c        **** 
+  41:test.c        **** ISR(TIMER1_COMPA_vect)
+  42:test.c        **** {
+ 198               	.LM13:
+ 199               	.LFBB3:
+ 200 0036 1F92      		push r1
+ 201 0038 0F92      		push r0
+ 202 003a 0FB6      		in r0,__SREG__
+ 203 003c 0F92      		push r0
+ 204 003e 1124      		clr __zero_reg__
+ 205 0040 8F93      		push r24
+ 206 0042 9F93      		push r25
+ 207               	/* prologue: Signal */
+ 208               	/* frame size = 0 */
+ 209               	/* stack size = 5 */
+ 210               	.L__stack_usage = 5
+  43:test.c        ****         PORTD ^= (1<<0);
+ 212               	.LM14:
+ 213 0044 82B3      		in r24,0x12
+ 214 0046 91E0      		ldi r25,lo8(1)
+ 215 0048 8927      		eor r24,r25
+ 216 004a 82BB      		out 0x12,r24
+ 217               	/* epilogue start */
+  44:test.c        **** }
+ 219               	.LM15:
+ 220 004c 9F91      		pop r25
+ 221 004e 8F91      		pop r24
+ 222 0050 0F90      		pop r0
+ 223 0052 0FBE      		out __SREG__,r0
+ 224 0054 0F90      		pop r0
+ 225 0056 1F90      		pop r1
+ 226 0058 1895      		reti
+ 228               	.Lscope3:
+ 230               		.stabd	78,0,0
+ 232               	.Letext0:
+ 233               		.ident	"GCC: (GNU) 4.8.1"
+DEFINED SYMBOLS
+                            *ABS*:00000000 test.c
+     /tmp/ccVScZSh.s:2      *ABS*:0000003e __SP_H__
+     /tmp/ccVScZSh.s:3      *ABS*:0000003d __SP_L__
+     /tmp/ccVScZSh.s:4      *ABS*:0000003f __SREG__
+     /tmp/ccVScZSh.s:5      *ABS*:00000000 __tmp_reg__
+     /tmp/ccVScZSh.s:6      *ABS*:00000001 __zero_reg__
+     /tmp/ccVScZSh.s:105    .text:00000000 init
+     /tmp/ccVScZSh.s:167    .text.startup:00000000 main
+     /tmp/ccVScZSh.s:195    .text:00000036 __vector_6
+
+NO UNDEFINED SYMBOLS

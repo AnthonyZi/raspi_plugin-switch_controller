@@ -4,7 +4,7 @@ MCU=atmega8
 
 ###################################################################
 ##Target-Name
-TARGET=avr_remote_switch
+TARGET=test
 
 ###################################################################
 ##Which Programmer do you use?
@@ -24,7 +24,7 @@ FORMAT=ihex
 ###################################################################
 ##List of all source files
 SOURCE=$(TARGET).c
-SOURCE+=transmitter_remoteswitch_protocol.c
+#SOURCE+=transmitter_remoteswitch_protocol.c
 
 
 ######################
@@ -87,7 +87,7 @@ LDFLAGS += -lm
 AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
 #AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
 
-#AVRDUDE_FLAGS = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER)
+#AVRDUDE_FLAGS = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER) -C $(AVRDUDE_CONF)
 AVRDUDE_FLAGS = -p $(MCU) -c $(AVRDUDE_PROGRAMMER) -C $(AVRDUDE_CONF)
 
 ##Uncomment the following if you want avrdude's erase cycle counter.

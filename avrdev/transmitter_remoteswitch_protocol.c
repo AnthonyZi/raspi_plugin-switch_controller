@@ -2,7 +2,7 @@
 
 //global variables to avoid multiple definitions while linking
 uint8_t datapin = 0;
-uint8_t timerinterrupt = 0;
+volatile uint8_t timerinterrupt = 0;
 
 void transmitter_init()
 {
@@ -14,7 +14,7 @@ void transmitter_init()
         //Setup the I/O for the LED
         
         TRANSMITTER_DDR |= (1<<TRANSMITTER_PIN_NUMBER);		//Set PortD Pin0 as an output
-        TRANSMITTER_PORT |= (1<<TRANSMITTER_PIN_NUMBER);        //Set PortD Pin0 high to turn on LED
+//        TRANSMITTER_PORT |= (1<<TRANSMITTER_PIN_NUMBER);        //Set PortD Pin0 high to turn on LED
 }
 
 void transmitter_sendbit(uint8_t valp)
@@ -79,5 +79,3 @@ ISR(TIMER1_COMPA_vect)
         TCCR1B &= ~(1<<CS10) & ~(1<<CS11) & ~(1<<CS12); //stop timer
         TCNT1 = 0;                                      //clear counter for the next usage
 }
-
-

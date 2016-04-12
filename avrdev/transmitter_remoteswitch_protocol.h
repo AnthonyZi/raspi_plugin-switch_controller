@@ -5,9 +5,8 @@
 #include <avr/interrupt.h>
 #include <stdint.h>
 
-#define TIMEUNIT        375     //µs
-#define SHORTPAUSE      1       //multiple of timeunit
-#define LONGPAUSE       3       //multiple of timeunit
+#define SHORTPAUSE      375     //in µs
+#define LONGPAUSE       1125    //in µs
 
 #define TRANSMITTER_DDR         DDRD
 #define TRANSMITTER_PORT        PORTD

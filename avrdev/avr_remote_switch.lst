@@ -1,0 +1,305 @@
+   1               		.file	"avr_remote_switch.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__tmp_reg__ = 0
+   6               	__zero_reg__ = 1
+   9               		.text
+  10               	.Ltext0:
+ 107               	.global	remote_switch
+ 109               	remote_switch:
+ 110               		.stabd	46,0,0
+   1:avr_remote_switch.c **** #include "transmitter_remoteswitch_protocol.h"
+   2:avr_remote_switch.c **** #include <avr/io.h>
+   3:avr_remote_switch.c **** #include <avr/interrupt.h>
+   4:avr_remote_switch.c **** 
+   5:avr_remote_switch.c **** //known signals for a remote_switch
+   6:avr_remote_switch.c **** /*
+   7:avr_remote_switch.c ****  * #define SIGLENGTH 25
+   8:avr_remote_switch.c ****  * #define PREAMBLE	0b01000101000 00000000 000000
+   9:avr_remote_switch.c ****  * #define A		0b00000000000 00101010 000000
+  10:avr_remote_switch.c ****  * #define B		0b00000000000 10001010 000000
+  11:avr_remote_switch.c ****  * #define C		0b00000000000 10100010 000000
+  12:avr_remote_switch.c ****  * #define D		0b00000000000 10101000 000000
+  13:avr_remote_switch.c ****  * #define ON		0b00000000000 00000000 100010
+  14:avr_remote_switch.c ****  * #define OFF		0b00000000000 00000000 101000
+  15:avr_remote_switch.c ****  * #define END		0b00000000000 10101010 111110
+  16:avr_remote_switch.c ****  */
+  17:avr_remote_switch.c **** 
+  18:avr_remote_switch.c **** #define SIGLENGTH 25
+  19:avr_remote_switch.c **** #define PREAMBLE	0b0100010100000000000000000
+  20:avr_remote_switch.c **** #define A		0b0000000000000101010000000
+  21:avr_remote_switch.c **** #define B		0b0000000000010001010000000
+  22:avr_remote_switch.c **** #define C		0b0000000000010100010000000
+  23:avr_remote_switch.c **** #define D		0b0000000000010101000000000
+  24:avr_remote_switch.c **** #define ON		0b0000000000000000000100010
+  25:avr_remote_switch.c **** #define OFF		0b0000000000000000000101000
+  26:avr_remote_switch.c **** #define END		0b0000000000010101010111110
+  27:avr_remote_switch.c **** 
+  28:avr_remote_switch.c **** 
+  29:avr_remote_switch.c **** void remote_switch(uint8_t switch_no, uint8_t state)
+  30:avr_remote_switch.c **** {
+ 112               	.LM0:
+ 113               	.LFBB1:
+ 114 0000 CF92      		push r12
+ 115 0002 DF92      		push r13
+ 116 0004 EF92      		push r14
+ 117 0006 FF92      		push r15
+ 118 0008 CF93      		push r28
+ 119 000a DF93      		push r29
+ 120 000c 1F92      		push __zero_reg__
+ 121 000e CDB7      		in r28,__SP_L__
+ 122 0010 DEB7      		in r29,__SP_H__
+ 123               	/* prologue: function */
+ 124               	/* frame size = 1 */
+ 125               	/* stack size = 7 */
+ 126               	.L__stack_usage = 7
+ 127 0012 F82E      		mov r15,r24
+  31:avr_remote_switch.c ****         uint32_t signal = 0;
+  32:avr_remote_switch.c ****         PORTD |= 1<<0;
+ 129               	.LM1:
+ 130 0014 909A      		sbi 0x12,0
+  33:avr_remote_switch.c ****         timer1delaymilli(1000);
+ 132               	.LM2:
+ 133 0016 88EE      		ldi r24,lo8(-24)
+ 134 0018 93E0      		ldi r25,lo8(3)
+ 135 001a 6983      		std Y+1,r22
+ 136 001c 00D0      		rcall timer1delaymilli
+  34:avr_remote_switch.c ****         PORTD ^= 1<<0;
+ 138               	.LM3:
+ 139 001e 92B3      		in r25,0x12
+ 140 0020 81E0      		ldi r24,lo8(1)
+ 141 0022 9827      		eor r25,r24
+ 142 0024 92BB      		out 0x12,r25
+  35:avr_remote_switch.c ****         timer1delaymilli(1000);
+ 144               	.LM4:
+ 145 0026 88EE      		ldi r24,lo8(-24)
+ 146 0028 93E0      		ldi r25,lo8(3)
+ 147 002a 00D0      		rcall timer1delaymilli
+ 148 002c 8FEF      		ldi r24,lo8(-1)
+ 149 002e 8F0D      		add r24,r15
+ 150 0030 6981      		ldd r22,Y+1
+ 151 0032 8430      		cpi r24,lo8(4)
+ 152 0034 00F4      		brsh .L5
+ 153 0036 90E0      		ldi r25,0
+ 154 0038 FC01      		movw r30,r24
+ 155 003a EE0F      		lsl r30
+ 156 003c FF1F      		rol r31
+ 157 003e E80F      		add r30,r24
+ 158 0040 F91F      		adc r31,r25
+ 159 0042 E050      		subi r30,lo8(-(CSWTCH.2))
+ 160 0044 F040      		sbci r31,hi8(-(CSWTCH.2))
+ 161 0046 C080      		ld  r12,Z
+ 162 0048 D180      		ldd r13,Z+1
+ 163 004a E280      		ldd r14,Z+2
+ 164 004c F12C      		mov r15,__zero_reg__
+ 165 004e 00C0      		rjmp .L2
+ 166               	.L5:
+ 167 0050 C12C      		mov r12,__zero_reg__
+ 168 0052 D12C      		mov r13,__zero_reg__
+ 169 0054 7601      		movw r14,r12
+ 170               	.L2:
+  36:avr_remote_switch.c **** 
+  37:avr_remote_switch.c ****         switch(switch_no)
+  38:avr_remote_switch.c ****         {
+  39:avr_remote_switch.c ****                 case 1:
+  40:avr_remote_switch.c ****                         signal |= PREAMBLE | A;
+  41:avr_remote_switch.c ****                         break;
+  42:avr_remote_switch.c ****                 case 2:
+  43:avr_remote_switch.c ****                         signal |= PREAMBLE | B;
+  44:avr_remote_switch.c ****                         break;
+  45:avr_remote_switch.c ****                 case 3:
+  46:avr_remote_switch.c ****                         signal |= PREAMBLE | C;
+  47:avr_remote_switch.c ****                         break;
+  48:avr_remote_switch.c ****                 case 4:
+  49:avr_remote_switch.c ****                         signal |= PREAMBLE | D;
+  50:avr_remote_switch.c ****                         break;
+  51:avr_remote_switch.c ****                 default:
+  52:avr_remote_switch.c ****                         break;
+  53:avr_remote_switch.c **** 
+  54:avr_remote_switch.c ****         }
+  55:avr_remote_switch.c ****         (state==1) ? (signal |= ON) : (signal |= OFF);
+ 172               	.LM5:
+ 173 0056 6130      		cpi r22,lo8(1)
+ 174 0058 01F4      		brne .L3
+ 176               	.LM6:
+ 177 005a 82E2      		ldi r24,34
+ 178 005c C82A      		or r12,r24
+ 179 005e 00C0      		rjmp .L4
+ 180               	.L3:
+ 182               	.LM7:
+ 183 0060 E8E2      		ldi r30,40
+ 184 0062 CE2A      		or r12,r30
+ 185               	.L4:
+  56:avr_remote_switch.c **** 
+  57:avr_remote_switch.c ****         transmitter_activate();
+ 187               	.LM8:
+ 188 0064 00D0      		rcall transmitter_activate
+  58:avr_remote_switch.c ****         transmitter_sendsignal(signal, SIGLENGTH);
+ 190               	.LM9:
+ 191 0066 49E1      		ldi r20,lo8(25)
+ 192 0068 C701      		movw r24,r14
+ 193 006a B601      		movw r22,r12
+ 194 006c 00D0      		rcall transmitter_sendsignal
+  59:avr_remote_switch.c ****         transmitter_sendsignal(signal, SIGLENGTH);
+ 196               	.LM10:
+ 197 006e 49E1      		ldi r20,lo8(25)
+ 198 0070 C701      		movw r24,r14
+ 199 0072 B601      		movw r22,r12
+ 200 0074 00D0      		rcall transmitter_sendsignal
+  60:avr_remote_switch.c ****         transmitter_sendsignal(signal, SIGLENGTH);
+ 202               	.LM11:
+ 203 0076 49E1      		ldi r20,lo8(25)
+ 204 0078 C701      		movw r24,r14
+ 205 007a B601      		movw r22,r12
+ 206 007c 00D0      		rcall transmitter_sendsignal
+  61:avr_remote_switch.c ****         transmitter_sendsignal(PREAMBLE | END, SIGLENGTH);
+ 208               	.LM12:
+ 209 007e 49E1      		ldi r20,lo8(25)
+ 210 0080 6EEB      		ldi r22,lo8(-66)
+ 211 0082 7AE2      		ldi r23,lo8(42)
+ 212 0084 8AE8      		ldi r24,lo8(-118)
+ 213 0086 90E0      		ldi r25,0
+ 214               	/* epilogue start */
+  62:avr_remote_switch.c **** }
+ 216               	.LM13:
+ 217 0088 0F90      		pop __tmp_reg__
+ 218 008a DF91      		pop r29
+ 219 008c CF91      		pop r28
+ 220 008e FF90      		pop r15
+ 221 0090 EF90      		pop r14
+ 222 0092 DF90      		pop r13
+ 223 0094 CF90      		pop r12
+  61:avr_remote_switch.c ****         transmitter_sendsignal(PREAMBLE | END, SIGLENGTH);
+ 225               	.LM14:
+ 226 0096 00C0      		rjmp transmitter_sendsignal
+ 228               	.Lscope1:
+ 230               		.stabd	78,0,0
+ 231               		.section	.text.startup,"ax",@progbits
+ 233               	.global	main
+ 235               	main:
+ 236               		.stabd	46,0,0
+  63:avr_remote_switch.c **** 
+  64:avr_remote_switch.c **** int main(void)
+  65:avr_remote_switch.c **** {
+ 238               	.LM15:
+ 239               	.LFBB2:
+ 240               	/* prologue: function */
+ 241               	/* frame size = 0 */
+ 242               	/* stack size = 0 */
+ 243               	.L__stack_usage = 0
+  66:avr_remote_switch.c ****         transmitter_init();
+ 245               	.LM16:
+ 246 0000 00D0      		rcall transmitter_init
+ 247               	.L8:
+  67:avr_remote_switch.c **** 
+  68:avr_remote_switch.c ****         while(1) //Loop forever, interrupts do the rest
+  69:avr_remote_switch.c ****         {
+  70:avr_remote_switch.c ****                remote_switch(1, 0);
+ 249               	.LM17:
+ 250 0002 60E0      		ldi r22,0
+ 251 0004 81E0      		ldi r24,lo8(1)
+ 252 0006 00D0      		rcall remote_switch
+  71:avr_remote_switch.c ****                timer1delaymilli(10000);
+ 254               	.LM18:
+ 255 0008 80E1      		ldi r24,lo8(16)
+ 256 000a 97E2      		ldi r25,lo8(39)
+ 257 000c 00D0      		rcall timer1delaymilli
+ 258 000e 00C0      		rjmp .L8
+ 260               	.Lscope2:
+ 262               		.stabd	78,0,0
+ 263               		.text
+ 265               	.global	__vector_2
+ 267               	__vector_2:
+ 268               		.stabd	46,0,0
+  72:avr_remote_switch.c ****         }
+  73:avr_remote_switch.c **** }
+  74:avr_remote_switch.c **** 
+  75:avr_remote_switch.c **** ISR(INT1_vect)
+  76:avr_remote_switch.c **** {
+ 270               	.LM19:
+ 271               	.LFBB3:
+ 272 0098 1F92      		push r1
+ 273 009a 0F92      		push r0
+ 274 009c 0FB6      		in r0,__SREG__
+ 275 009e 0F92      		push r0
+ 276 00a0 1124      		clr __zero_reg__
+ 277 00a2 2F93      		push r18
+ 278 00a4 3F93      		push r19
+ 279 00a6 4F93      		push r20
+ 280 00a8 5F93      		push r21
+ 281 00aa 6F93      		push r22
+ 282 00ac 7F93      		push r23
+ 283 00ae 8F93      		push r24
+ 284 00b0 9F93      		push r25
+ 285 00b2 AF93      		push r26
+ 286 00b4 BF93      		push r27
+ 287 00b6 EF93      		push r30
+ 288 00b8 FF93      		push r31
+ 289               	/* prologue: Signal */
+ 290               	/* frame size = 0 */
+ 291               	/* stack size = 15 */
+ 292               	.L__stack_usage = 15
+  77:avr_remote_switch.c ****         remote_switch(1, 1);
+ 294               	.LM20:
+ 295 00ba 61E0      		ldi r22,lo8(1)
+ 296 00bc 81E0      		ldi r24,lo8(1)
+ 297 00be 00D0      		rcall remote_switch
+ 298               	/* epilogue start */
+  78:avr_remote_switch.c **** }
+ 300               	.LM21:
+ 301 00c0 FF91      		pop r31
+ 302 00c2 EF91      		pop r30
+ 303 00c4 BF91      		pop r27
+ 304 00c6 AF91      		pop r26
+ 305 00c8 9F91      		pop r25
+ 306 00ca 8F91      		pop r24
+ 307 00cc 7F91      		pop r23
+ 308 00ce 6F91      		pop r22
+ 309 00d0 5F91      		pop r21
+ 310 00d2 4F91      		pop r20
+ 311 00d4 3F91      		pop r19
+ 312 00d6 2F91      		pop r18
+ 313 00d8 0F90      		pop r0
+ 314 00da 0FBE      		out __SREG__,r0
+ 315 00dc 0F90      		pop r0
+ 316 00de 1F90      		pop r1
+ 317 00e0 1895      		reti
+ 319               	.Lscope3:
+ 321               		.stabd	78,0,0
+ 322               		.section	.rodata
+ 325               	CSWTCH.2:
+ 326 0000 80        		.byte	-128
+ 327 0001 0A        		.byte	10
+ 328 0002 8A        		.byte	-118
+ 329 0003 80        		.byte	-128
+ 330 0004 22        		.byte	34
+ 331 0005 8A        		.byte	-118
+ 332 0006 80        		.byte	-128
+ 333 0007 28        		.byte	40
+ 334 0008 8A        		.byte	-118
+ 335 0009 00        		.byte	0
+ 336 000a 2A        		.byte	42
+ 337 000b 8A        		.byte	-118
+ 338               		.text
+ 340               	.Letext0:
+ 341               		.ident	"GCC: (GNU) 4.8.1"
+ 342               	.global __do_copy_data
+DEFINED SYMBOLS
+                            *ABS*:00000000 avr_remote_switch.c
+     /tmp/ccc7JEh3.s:2      *ABS*:0000003e __SP_H__
+     /tmp/ccc7JEh3.s:3      *ABS*:0000003d __SP_L__
+     /tmp/ccc7JEh3.s:4      *ABS*:0000003f __SREG__
+     /tmp/ccc7JEh3.s:5      *ABS*:00000000 __tmp_reg__
+     /tmp/ccc7JEh3.s:6      *ABS*:00000001 __zero_reg__
+     /tmp/ccc7JEh3.s:109    .text:00000000 remote_switch
+     /tmp/ccc7JEh3.s:325    .rodata:00000000 CSWTCH.2
+     /tmp/ccc7JEh3.s:235    .text.startup:00000000 main
+     /tmp/ccc7JEh3.s:267    .text:00000098 __vector_2
+
+UNDEFINED SYMBOLS
+timer1delaymilli
+transmitter_activate
+transmitter_sendsignal
+transmitter_init
+__do_copy_data
