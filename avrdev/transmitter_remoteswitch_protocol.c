@@ -1,7 +1,6 @@
 #include "transmitter_remoteswitch_protocol.h"
 
 //global variables to avoid multiple definitions while linking
-uint8_t datapin = 0;
 volatile uint8_t timerinterrupt = 0;
 
 void transmitter_init()
@@ -46,13 +45,14 @@ void transmitter_activate()
 
 void transmitter_sendsignal(uint32_t signalp, uint8_t signallengthp)
 {
-	uint32_t signalcomperator = 1<<(signallengthp-1);
+	uint32_t signalcomperator = 1UL<<(signallengthp-1);
         TRANSMITTER_PORT &= ~(1<<TRANSMITTER_PIN_NUMBER);
         timer1delaymilli(10);
-        for(int i = 0; i<signallengthp; i++)
+        int i;
+        for(i = 0; i<signallengthp; i++)
         {
-		transmitter_sendbit( (signalp&signalcomperator) > 0 );
-		signalp = signalp<<1;
+                transmitter_sendbit((signalp&signalcomperator)>0);
+                signalp <<= 1;
         }
 }
 

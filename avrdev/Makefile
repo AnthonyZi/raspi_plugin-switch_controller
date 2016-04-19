@@ -14,7 +14,7 @@ AVRDUDE_CONF=/home/pi/customavrdude.conf
 
 ###################################################################
 ##Optimization levels : 0, 1, 2, 3, s ---  "s" for space-saving
-OPTIMIZATION=s
+OPTIMIZATION=3
 
 ###################################################################
 ##Output format. (can be srec, ihex, binary)
