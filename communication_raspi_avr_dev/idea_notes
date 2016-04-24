@@ -1,1 +1,74 @@
-2 wire-protocol?
+M2S -> Master-2wire-Slave
+
+
+Master          Slave
+-----|          |-----
+  clk|          |clk
+    o|----------|o
+     |          |
+ data|          |data
+    o|----------|o
+     |          |
+-----|          |-----
+
+
+Master sends information over data-wire to Slave
+
+
+STARTBIT S | STOPBIT P
+
+DATA
+    ---    |  -
+   /       |   \
+  -        |    ---
+  
+CLOCK
+      -    |      -
+     /     |     /
+  ---      |  ---
+
+INFOBITS
+
+DATA
+  -----
+ /     \
+-       -----
+
+CLOCK
+---   ---   -
+   \ /   \ /
+    -     -
+
+
+
+send 01101
+
+DATA
+  ---|-      |  -----|-------|-      |  -----|--- - ---|-
+ /   | \     | /     |       | \     | /     |     X   | \
+-    |  -----|-      |       |  -----|-      |--- - ---|-----
+     |       |       |       |       |       |         |
+CLOCK|       |       |       |       |       |         |
+    -|---   -|---   -|---   -|---   -|---   -|-       -|---
+   / |   \ / |   \ / |   \ / |   \ / |   \ / | \     / |   \
+---  |    -  |    -  |    -  |    -  |    -  |  - ---  |    -
+
+   S       0       1       1       0       1         P
+
+TMPSAVE
+0..1     0 0     1 1     1 1     0 0     1 1   1     0   0..
+
+MASTER
+Interrupt-handled data-transfer
+Interrupts are invoked with every rising and falling edge of CLK
+
+STARTBIT S :    pull DATA from 0 to 1, then pull CLK from 0 to 1 to invoke an interrupt and signal the start-condition
+INFOBITS 0/1 :  switch DATA to 0/1, then clear CLK and pull it up again to invoke the interrupt
+STOPBIT P :     clear CLK, toggle DATA, pull CLK to 1 to invoke interrupt
+
+
+SLAVE
+clk :   if clk-pin switches from 0 to 1, invoke an interrupt and immediately read data. write data into a buffer.
+data :  0V to receive a 0, +V to receive a 1
+
+

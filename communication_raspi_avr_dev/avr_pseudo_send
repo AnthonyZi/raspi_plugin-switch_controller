@@ -1,0 +1,45 @@
+#include <util/delay.h>
+
+sendbuffer= 0b 0000 0000
+
+send_M2S_startbit()
+{
+        set Data 1
+        _delay_us(50);
+        set Clock 1
+}
+
+send_M2S_infobit(uint8_t _databit)
+{
+        set Data _databit
+        _delay_us(50);
+        set Clock 0
+        _delay_us(50);
+        set Clock 1
+        _delay_us(50);
+}
+
+send_M2S_stopbit()
+{
+        set Clock 0
+        _delay_us(50);
+        toggle Data
+        _delay_us(50);
+        set Clock 1;
+        _delay_us(50);
+        set Data 0;
+        _delay_us(50);
+        set Clock 0;
+        _delay_us(50);
+}
+
+send_byte_M2S(uint8_t data)
+{
+       send_M2S_startbit();
+       int i;
+       for(i=0; i<8; i++)
+       {
+               send_MS2_infobit( data&0b1 );
+       }
+       send_M2S_stopbit();
+}

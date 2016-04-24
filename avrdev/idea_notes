@@ -1,0 +1,55 @@
+transmitter_remoteswitch_protocol_v2 :
+
+sendbuffer
+sendbuffer_comperator
+sendbuffer_state
+
+sendroutine()
+{
+        if sendbuffer_state==SENDBIT1
+        {
+                TX=1
+
+                if (sendbuffer_comperator&sendbuffer)>0
+                        timer1delay short
+                if (sendbuffer_comperator&sendbuffer)==0
+                        timer1delay long
+
+                sendbuffer_state = SENDBIT2
+        }
+        if sendbuffer_state==SENDBIT2
+        {
+                TX=0
+
+                if (sendbuffer_comperator&sendbuffer)>0
+                        timer1delaymicro long
+                if (sendbuffer_comperator&sendbuffer)==0
+                        timer1delaymicro short
+
+                sendbuffer_state = SENDBIT1
+                sendbuffer_comperator >>= 1;
+        }
+        if sendbuffer_state==TRANSMITTER_ACTIVATION1
+        {
+                TX=1
+                timer1delaymilli 1
+                sendbuffer_state = TRANSMITTER_ACTIVATION2;
+        }
+        if sendbuffer_state==TRANSMITTER_ACTIVATION2
+                TX=0
+                timer1delaymilli 10
+                sendbuffer_state = SENDBIT1
+}
+
+ISR
+{
+        stop timer
+        clear counter
+        if sendbuffer_comperator>0
+                sendroutine()
+        else
+                sendbuffer=0
+                sendbuffer_comperator=0
+                sendbuffer_state=SENDBIT1
+        
+}

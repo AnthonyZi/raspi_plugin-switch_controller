@@ -1,0 +1,39 @@
+lastdata=0
+receiving=0
+rbuffer_ready_to_read=0
+receive_buffer= 0b 0000 0000
+
+init()
+{
+        MCUCR=? //set interrupt on pin to toggle-mode
+        GICR=?  //activate interrupt on pin
+        SREG=?  //activate interrupts globally
+}
+
+ISR(int_vector)
+{
+        valueclk=PIN            //read state of clock-pin
+        valuedata=PINDATA       //read state of data-pin
+
+        if(falling-clock-edge[valueclk=0])
+                lastdata=valuedata
+
+        if(rising-clock-edge[valueclk=1])
+                if(valuedata=lastdata)  //no start or stop-condition
+                        if(receiving)
+                                receive_buffer <<= 1
+                                receive_buffer & valueclk
+                else
+                        if(receiving)
+                                rbuffer_ready_to_read = 1
+                                receiving = 0
+                        else
+                                receiving = 1
+
+}
+
+main()
+{
+        if(rbuffer_ready_to_read)
+                read_buffer()
+}

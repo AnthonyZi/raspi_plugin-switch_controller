@@ -24,7 +24,7 @@ FORMAT=ihex
 ###################################################################
 ##List of all source files
 SOURCE=$(TARGET).c
-SOURCE+=transmitter_remoteswitch_protocol.c
+SOURCE+=remoteswitch.c
 
 
 ######################
