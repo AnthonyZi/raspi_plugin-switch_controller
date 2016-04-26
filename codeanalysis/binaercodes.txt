@@ -26,7 +26,9 @@
 (1111 e -> 10101010)
 
 
-0 100010 1000   code   100010 0 100010 1000   code   100010
+full code sequence
+0 100010 1000   code   100010
+0 100010 1000   code   100010
 0 100010 1000   code   100010
 0 100010 1000 10101010 111110
 
@@ -40,5 +42,6 @@ Ueberlegungen zum Praeamble:
   1 0 1  1 0
 10110 -> code der einheitlich eingestellt wird
 
+simple code-idea is:
 0 ABCDE code 101 on
 0 ABCDE code 110 off

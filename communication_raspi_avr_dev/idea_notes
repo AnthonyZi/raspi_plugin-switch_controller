@@ -70,5 +70,3 @@ STOPBIT P :     clear CLK, toggle DATA, pull CLK to 1 to invoke interrupt
 SLAVE
 clk :   if clk-pin switches from 0 to 1, invoke an interrupt and immediately read data. write data into a buffer.
 data :  0V to receive a 0, +V to receive a 1
-
-
